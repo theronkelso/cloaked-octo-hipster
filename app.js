@@ -1,4 +1,7 @@
 //app.js
+
+myVersion = '1.0.0';
+myProductName = 'slackbot';
 var express = require('express');
 var bodyParser = require('body-parser');
 var hellobot = require('./hellobot');
@@ -23,6 +26,11 @@ app.get('/', function (req,res) {
   });
 });
 app.post('/hello', hellobot);
+
+app.get('/version', function(req,res){
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Version ' + myVersion + ' of ' + myProductName + '.\n');
+});
 
 //error handler
 app.use(function (err, req, res, next){
