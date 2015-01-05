@@ -28,7 +28,7 @@ var hellobot = require('./hellobot');
 var firebase = require('firebase');
 
 var hellobotPrefs = {
-  myPort: 3000,
+  myPort: process.env.PORT || 3000,
   firebaseUrl: 'https://amber-inferno-3633.firebaseio.com/users'
 };
 
