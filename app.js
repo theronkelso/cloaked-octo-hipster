@@ -20,7 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-var myVersion = '0.03'; myProductName = 'hellobot';
+var myVersion = '0.04'; myProductName = 'hellobot';
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -29,6 +29,7 @@ var firebase = require('firebase');
 
 var hellobotPrefs = {
   myPort: process.env.PORT || 3000,
+  //myPort: 3000,
   firebaseUrl: 'https://amber-inferno-3633.firebaseio.com/users'
 };
 
@@ -46,8 +47,17 @@ app.get('/', function (req,res) {
   //  fb.child('name').once('value', function(snapshot){
   fb.once('value', function(snapshot){
     console.log(snapshot.val());
-    res.status(200).send(snapshot.val());
-    //res.end();
+    res.setHeader('Content-Type', 'text/plain');
+    for (var name in snapshot.val()){
+      var obj = snapshot.val()[name];
+      for (var prop in obj){
+        if (obj.hasOwnProperty(prop)){
+          res.write(obj[prop] + '\n');
+        }
+      }
+    }
+
+    res.end();
   }, function (errorObject){
     console.log('the read failed: ' + errorObject.code);
   });
@@ -72,6 +82,5 @@ app.use(function (err, req, res, next){
 });
 
 app.listen(hellobotPrefs.myPort, function(){
-
   console.log('hellobot listening on port: ' + hellobotPrefs.myPort);
 });
