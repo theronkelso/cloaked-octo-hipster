@@ -20,7 +20,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-var myVersion = '0.04'; myProductName = 'hellobot';
+var myVersion = '0.05'; myProductName = 'hellobot';
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -29,8 +29,11 @@ var firebase = require('firebase');
 
 var hellobotPrefs = {
   myPort: process.env.PORT || 3000,
-  //myPort: 3000,
   firebaseUrl: 'https://amber-inferno-3633.firebaseio.com/users'
+};
+
+var hellobotStats = {
+  ctCalls: 0
 };
 
 var fb = new firebase(hellobotPrefs.firebaseUrl);
@@ -41,6 +44,11 @@ var app = express();
 
 //body parser middleware
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(function(req, res, next){
+  console.log('Time: %d', Date.now());
+  hellobotStats.ctCalls++;
+  next();
+});
 
 //test route
 app.get('/', function (req,res) {
@@ -68,6 +76,11 @@ app.post('/hello', hellobot);
 app.get('/version', function(req,res){
   res.setHeader('Content-Type', 'text/plain');
   res.end('Version ' + myVersion + ' of ' + myProductName + '.\n');
+});
+
+app.get('/status', function(req,res){
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Calls: ' + hellobotStats.ctCalls + '.\n');
 });
 
 app.get('/now', function(req,res){
