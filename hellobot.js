@@ -75,7 +75,7 @@ module.exports = function (req, res, next){
   tryCreateUser(userName, userData);
   var slogan = getRandomSnarkySlogan();
   var botPayload = {
-    text : 'Hello, ' + userName + '... > ' + slogan
+    text : 'Hello, ' + userName + '... ' + slogan
   };
 
   //avoid and ininite loop
