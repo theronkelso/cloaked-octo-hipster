@@ -37,14 +37,45 @@ function tryCreateUser(userName, userData){
   });
 }
 
+function random (lower, upper) {
+    var range = upper - lower + 1;
+    return (Math.floor ((Math.random () * range) + lower));
+}
+
+function getRandomSnarkySlogan () { //8/15/14 by DW
+    var snarkySlogans = [
+    "Good for the environment.",
+    "All baking done on premises.",
+    "Still diggin!",
+    "It's even worse than it appears.",
+    "Ask not what the Internet can do for you...",
+    "You should never argue with a crazy man.",
+    "Welcome back my friends to the show that never ends.",
+    "Greetings, citizen of Planet Earth. We are your overlords. :-)",
+    "We don't need no stinkin rock stars.",
+    "This aggression will not stand.",
+    "Pay no attention to the man behind the curtain.",
+    "Only steal from the best.",
+    "Reallll soooon now...",
+    "What a long strange trip it's been.",
+    "Ask not what the Internet can do for you.",
+    "When in doubt, blog.",
+    "Shut up and eat your vegetables.",
+    "Don't slam the door on the way out.",
+    "Yeah well, that's just, you know, like, your opinion, man.",
+    "So, it has come to this."
+    ];
+    return (snarkySlogans [random (0, snarkySlogans.length - 1)]);
+}
+
 module.exports = function (req, res, next){
   var userName = req.body.user_name;
   var userData = { name : req.body.user_name };
 
   tryCreateUser(userName, userData);
-
+  var slogan = getRandomSnarkySlogan();
   var botPayload = {
-    text : 'Hello, ' + userName + '!'
+    text : 'Hello, ' + userName + '... ' + slogan
   };
 
   //avoid and ininite loop

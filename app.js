@@ -20,8 +20,9 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-var myVersion = '0.05'; myProductName = 'hellobot';
+var myVersion = '0.07'; myProductName = 'hellobot';
 
+var fs = require ("fs");
 var express = require('express');
 var bodyParser = require('body-parser');
 var hellobot = require('./hellobot');
@@ -33,20 +34,36 @@ var hellobotPrefs = {
 };
 
 var hellobotStats = {
-  ctCalls: 0
+  ctCalls: 0,
+  whenLastStart: new Date (0)
 };
 
 var fb = new firebase(hellobotPrefs.firebaseUrl);
-var fnamePrefs = "prefs/prefs.json"; fname = 'perfs/stats.json';
-var now = new Date ();
+var fnameStats = 'perfs/stats.json';
 
 var app = express();
+
+function jsonStringify (jstruct) {
+  return (JSON.stringify (jstruct, undefined, 4));
+}
+
+function writeStats (fname, stats) {
+//  var f = getFullFilePath (fname);
+//  fsSureFilePath (f, function () {
+    fs.writeFile (fname, jsonStringify (stats), function (err) {
+      if (err) {
+        console.log ("writeStats: error == " + err.message);
+      }
+  //  });
+  });
+}
 
 //body parser middleware
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(function(req, res, next){
   console.log('Time: %d', Date.now());
   hellobotStats.ctCalls++;
+  writeStats (fnameStats, hellobotStats);
   next();
 });
 
@@ -80,12 +97,14 @@ app.get('/version', function(req,res){
 
 app.get('/status', function(req,res){
   res.setHeader('Content-Type', 'text/plain');
-  res.end('Calls: ' + hellobotStats.ctCalls + '.\n');
+  res.end('Calls: ' + hellobotStats.ctCalls + '.\n' +
+          'Last start: ' + hellobotStats.whenLastStart + '.\n');
 });
 
-app.get('/now', function(req,res){
+app.get('/time', function(req,res){
   res.setHeader('Content-Type', 'text/plain');
-  res.end(now.toString());
+  var time = new Date ();
+  res.end(time.toString());
 });
 
 //error handler
@@ -95,5 +114,7 @@ app.use(function (err, req, res, next){
 });
 
 app.listen(hellobotPrefs.myPort, function(){
+  var now = new Date ();
+  hellobotStats.whenLastStart = now;
   console.log('hellobot listening on port: ' + hellobotPrefs.myPort);
 });
